@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    name: policy-check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run agentic policy checks
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          chmod +x scripts/agent/*.sh scripts/agent/*.py || true
+          scripts/agent/check_change_control.sh
+
+  generic-checks:
+    name: generic-checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate shell scripts
+        run: |
+          bash -n scripts/agent/*.sh .githooks/*
+
+      - name: Validate Python helper scripts
+        run: |
+          python3 -m py_compile scripts/agent/*.py .codex/hooks/*.py
+
+      - name: Project checks placeholder
+        run: |
+          echo "Add language-specific lint/typecheck/test/build commands here."

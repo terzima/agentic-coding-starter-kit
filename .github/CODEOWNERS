@@ -1,0 +1,15 @@
+# Replace @your-github-username with the repository owner or team.
+# CODEOWNERS is useful once branch protection requires code owner review.
+
+* @your-github-username
+
+# Protected process files
+/AGENTS.md @your-github-username
+/CLAUDE.md @your-github-username
+/.github/ @your-github-username
+/.codex/ @your-github-username
+/.claude/ @your-github-username
+/.githooks/ @your-github-username
+/scripts/agent/ @your-github-username
+/docs/adr/ @your-github-username
+/docs/standards/ @your-github-username

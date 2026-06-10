@@ -1,0 +1,13 @@
+# Project-level Codex config.
+# Codex loads project .codex layers only after the project is trusted.
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+allow_login_shell = false
+
+[features]
+hooks = true
+
+[sandbox_workspace_write]
+# Keep network off by default. Ask before enabling network or installing dependencies.
+network_access = false

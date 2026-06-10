@@ -1,0 +1,49 @@
+{
+  "outputStyle": "Bare Engineering",
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git branch*)",
+      "Bash(git switch *)",
+      "Bash(git checkout -b *)",
+      "Bash(git worktree *)",
+      "Bash(rg *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(bash -n *)",
+      "Bash(python3 -m py_compile *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(gh pr create *)",
+      "Bash(npm install*)",
+      "Bash(pnpm install*)",
+      "Bash(pip install*)",
+      "Bash(uv sync*)",
+      "Bash(docker *)"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(curl * | sh*)",
+      "Bash(wget * | sh*)",
+      "Bash(rm -rf / *)",
+      "Bash(chmod -R 777 *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/pre_tool_use_policy.py"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+---
+description: Controlled agentic development workflow, scope control, and token discipline
+alwaysApply: true
+---
+
+Read `AGENTS.md` before coding. Use the required mode: Discovery, Spec, Plan, Implementation, or Review.
+
+Implementation mode rules:
+
+- Do not change accepted specs.
+- Do not expand scope.
+- Edit only files listed in the accepted plan unless a Change Request is opened.
+- Do not access network, add dependencies, or run downloaded code without approval.
+- Use bare output: blockers, failed checks, Change Requests, and final summary only.
+- Run relevant tests/checks before completion.
+
+Token discipline:
+
+- Do not scan the entire repo unless in Discovery mode.
+- Prefer `docs/repo-map.md`, active spec, and active plan over pasted history.
+- Do not load `docs/intake/PROJECT_OVERVIEW_RAW.md` during routine implementation.

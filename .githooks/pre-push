@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || true)
+case "$current_branch" in
+  main|master|prod|production|release/*)
+    echo "pre-push: direct push from protected branch '$current_branch' is blocked" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
