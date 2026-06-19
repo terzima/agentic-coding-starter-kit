@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if git diff --cached --name-only | grep -E '(^|/)\.env(\.|$)|\.pem$|\.key$|id_rsa|id_ed25519' >/dev/null; then
+if git diff --cached --name-only | grep -Ev '^\.env\.example$' | grep -E '(^|/)\.env(\.|$)|\.pem$|\.key$|id_rsa|id_ed25519' >/dev/null; then
   echo "pre-commit: refusing to commit likely secret file" >&2
   exit 1
 fi

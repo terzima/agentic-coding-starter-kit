@@ -1,907 +1,467 @@
 # Agentic Coding Starter Kit
 
-A reusable starter kit for running agentic software projects with stronger process control, cleaner documentation, safer permissions, and lower token waste.
+This repo is a reusable operating system for agent-assisted software projects.
+It is not an application scaffold. It is the workflow, documentation, adapter,
+hook, and review structure that can be copied into future projects before the
+actual product code exists.
 
-This repository is not an application template. It is a **project operating system** for agent-assisted development.
+The goal is to make a new project easy to start, easy to resume, and hard for an
+agent to accidentally turn into a sprawling undocumented mess.
 
-It gives future agents a controlled way to move from:
-
-```txt
-raw project idea
-  → seeded project docs
-  → decomposed specs
-  → implementation plans
-  → execution batches
-  → reviewed pull requests
-```
-
-The goal is to let agents work with useful autonomy while avoiding uncontrolled scope drift, noisy approvals, messy work trees, and undocumented implementation decisions.
-
----
-
-## Who this is for
-
-Use this starter kit when you want to:
-
-- start a new software project from a large written product overview,
-- use coding agents without giving them unrestricted YOLO access,
-- keep specs, plans, decisions, and implementation work separate,
-- reduce token usage by creating stable source-of-truth documents,
-- avoid mid-implementation spec rewrites,
-- group low-risk work into batches so the agent does not ask for pointless approvals,
-- preserve human review for moments where human judgment actually matters.
-
-This kit is especially useful for projects that will evolve through multiple implementation passes rather than one short coding session.
-
----
-
-## Core idea
-
-The central rule is:
-
-> The agent may brainstorm, seed, specify, plan, implement, or review — but it should not do all of those at once.
-
-The repo is organized around explicit operating modes:
-
-| Mode | Purpose | Writes code? |
-|---|---|---|
-| Project Seeding | Convert a raw overview into controlled project docs | No |
-| Discovery | Inspect and understand the repo | No |
-| Spec | Define what must be true | No |
-| Plan | Define how to implement an accepted spec | No |
-| Batch Planning | Group already-written specs/plans for execution | No |
-| Implementation | Edit code according to an accepted plan or batch | Yes |
-| Review | Check the diff against the accepted contract | No |
-
----
-
-## Important distinction: governance scaffold vs application scaffold
-
-This starter kit provides a **governance scaffold**.
-
-That means it gives you:
+The intended flow is:
 
 ```txt
-AGENTS.md
-docs/
-spec templates
-plan templates
-batch templates
-ADR templates
-prompt library
-sandbox policy
-approval policy
-workflow rules
+project idea or existing repo
+  -> durable startup docs
+  -> specs
+  -> implementation plans
+  -> optional batches
+  -> implementation
+  -> review
+  -> local commit / optional PR
 ```
 
-It does **not** automatically create your actual application structure, such as:
+The central habit is that important project state lives in repo files, not chat
+history.
+
+## What This Repo Provides
+
+This starter kit provides a governance scaffold:
+
+- canonical agent rules;
+- startup and handoff docs;
+- planning templates;
+- repo-local workflow skills;
+- Codex, Claude, and Cursor adapters;
+- optional local Git hooks;
+- optional GitHub policy files;
+- small verification and helper scripts.
+
+It does not provide a product scaffold:
+
+- no `frontend/`;
+- no `backend/`;
+- no `package.json`;
+- no `pyproject.toml`;
+- no database;
+- no deployment setup.
+
+Those belong in the new project's first accepted application scaffold spec and
+plan.
+
+## Core Rule
+
+Agents should not brainstorm, specify, plan, implement, and review all in one
+undifferentiated pass.
+
+Use explicit modes:
+
+| Mode | Purpose | Writes product code? |
+| --- | --- | --- |
+| Discovery | Inspect repo state and recommend the next safest action. | No |
+| Spike | Gather bounded evidence before changing specs, plans, or code. | No accepted behavior |
+| Spec | Define what must be true. | No |
+| Plan | Define how an accepted spec will be implemented. | No |
+| Implementation | Edit files according to an accepted plan or explicitly approved slice. | Yes |
+| Review | Inspect diffs, docs, tests, and risks. | No |
+
+`AGENTS.md` is the canonical behavior contract. Other files translate, support,
+or verify that contract.
+
+## Fresh Project Startup Sequence
+
+1. Create the new project repo.
+2. Copy the framework files listed in the copy surface below.
+3. Customize `AGENTS.md`, `agent-adapters.md`, `docs/status/CURRENT_STATE.md`,
+   and `docs/repo-map.md`.
+4. Decide which adapters are active: Codex, Claude, Cursor, Git hooks, GitHub.
+5. Use `project-intake-seeding` to convert owner notes or raw intake into
+   durable startup docs.
+6. Use `spike-research` for bounded unknowns that block a useful spec.
+7. Use `controlled-planning-docs` to create the first spec and plan.
+8. Use `accepted-plan-implementation` only after a plan is accepted or the owner
+   explicitly approves the exact implementation slice.
+
+## First Prompt To Paste
+
+Use this when opening a fresh agent session in a project that has this framework:
 
 ```txt
-backend/
-frontend/
-shared/
-tests/
-package.json
-pyproject.toml
-Dockerfile
-database/
-mobile/
+Mode: Discovery.
+
+We are in `[repo path]`.
+
+Read:
+1. `AGENTS.md`
+2. `docs/repo-map.md`
+3. `docs/status/CURRENT_STATE.md`
+4. Any active spec, plan, or batch listed in `docs/status/CURRENT_STATE.md`
+
+Do not edit files.
+Do not install dependencies.
+Do not access the network.
+
+Goal:
+Summarize the current repo state and identify the next safest action.
+
+Return:
+- Active objective
+- Active spec/plan/batch
+- Current branch and worktree status
+- Blocking gates or approvals
+- Recommended next prompt
 ```
 
-That application scaffold should be created by the first implementation spec/plan in the real project, usually:
+## What To Copy Into A New Project
+
+This is the intended copy surface. The unresolved questions at the end call out
+paths that still need reconciliation in this repo.
+
+### Required Core
+
+| Path | What it does | Customize? |
+| --- | --- | --- |
+| `AGENTS.md` | Canonical rules for modes, permissions, approvals, git, quality gates, and Change Requests. | Yes. Make it match the new project. |
+| `README.md` | Human-facing entrypoint explaining how to use the framework. | Yes. Keep only guidance that applies. |
+| `agent-adapters.md` | Explains how Codex, Claude, Cursor, skills, hooks, and GitHub policy connect to `AGENTS.md`. | Yes. Mark each adapter as active, optional, inert, or deferred. |
+| `docs/AGENTIC_WORKFLOW_MANUAL.md` | Startup manual and prompt index for humans and agents. | Yes. Remove examples that do not fit. |
+| `docs/repo-map.md` | Compact map of the new project's architecture, commands, and important files. | Yes. Must be project-specific. |
+| `docs/status/CURRENT_STATE.md` | Compact startup dashboard: active objective, active contract, branch/worktree state, gates, checks, files, next action. | Yes. Must be current before agent work starts. |
+
+### Planning Templates
+
+| Path | What it does |
+| --- | --- |
+| `docs/specs/_template.md` | Template for requirements: goals, non-goals, behavioral contracts, interfaces, gates, risks, stop conditions. |
+| `docs/plans/_template.md` | Template for executable implementation plans tied to accepted specs. |
+| `docs/plans/batches/_template.md` | Template for grouping already-written specs/plans into an execution batch. |
+| `docs/change-requests/_template.md` | Template for scope changes discovered during implementation. |
+| `docs/status/_template.md` | Template for creating `docs/status/CURRENT_STATE.md`. |
+| `docs/handoff/_template.md` | Template for restart-critical handoff notes when work is incomplete or complex. |
+| `docs/worklog/_template.md` | Template for research evidence, session notes, failed approaches, and decisions. |
+
+### Repo-Local Skills
+
+Copy `.agents/skills/`.
+
+| Skill | Use when |
+| --- | --- |
+| `project-intake-seeding` | Starting a fresh project from notes, raw intake, or an existing repo without durable context. |
+| `spike-research` | Gathering bounded evidence before a spec, plan, or implementation decision. |
+| `controlled-planning-docs` | Writing or revising specs, plans, batches, Change Requests, status files, handoffs, or worklogs. |
+| `controlled-agentic-development` | Deciding whether the current request may proceed under the controlled workflow. |
+| `accepted-plan-implementation` | Implementing an accepted plan or explicitly approved implementation slice. |
+| `change-request-control` | Handling accepted scope that proves wrong, incomplete, or too broad during implementation. |
+| `completion-review-gate` | Checking whether work is truly complete before closeout, commit, or PR. |
+| `spec-plan-alignment` | Reviewing whether a plan will actually deliver its linked spec. |
+| `token-triage` | Reducing active context and moving reusable knowledge into durable repo files. |
+
+Skills are procedural helpers, not always-on policy. `AGENTS.md` remains the
+canonical rule source.
+
+### Tool Adapters
+
+Copy only the adapters you plan to use.
+
+| Path | Tool | What it does | Status vocabulary |
+| --- | --- | --- | --- |
+| `.codex/` | Codex | Project config and hook wrappers for sandbox, approval, and policy behavior. | Usually `native-active` after project trust. |
+| `CLAUDE.md` | Claude | Thin Claude entrypoint pointing back to `AGENTS.md` and repo-local skills. | `native-active` when Claude reads it. |
+| `.claude/` | Claude | Settings, hooks, output style, and slash-command launchers for repo-local skills. | `native-active` or `copied-inert` depending on setup. |
+| `.cursor/` | Cursor | Always-on Cursor rules that summarize the workflow. | Guidance only, not a security boundary. |
+
+Adapter status labels:
+
+| Status | Meaning |
+| --- | --- |
+| `native-active` | The tool uses the files directly once the project is opened or trusted. |
+| `manual-setup-required` | Files are present, but the owner must activate them locally. |
+| `optional-remote` | Files matter only after external repository settings are configured. |
+| `copied-inert` | Files are references or examples until promoted. |
+| `future-spike` | Behavior is intentionally deferred until bounded research proves the design. |
+
+### Local Guardrails And Scripts
+
+| Path | What it does |
+| --- | --- |
+| `.githooks/` | Optional local Git guardrails. Active only after `core.hooksPath` points to `.githooks`. |
+| `scripts/agent/install_git_hooks.sh` | Installs local hooks intentionally. |
+| `scripts/agent/agent_preflight.sh` | Prints branch/worktree state and checks required startup files. |
+| `scripts/agent/agent_finalize.sh` | Prints closeout state and runs framework checks. |
+| `scripts/agent/check_change_control.sh` | CI/local check for likely secrets and code/test changes without planning docs. |
+| `scripts/agent/filter_output.py` | Trims noisy command output for agent-readable summaries. |
+| `scripts/agent/new_agent_task.sh` | Creates a task branch/worktree using the default `codex/` branch prefix. |
+| `scripts/agent/policy_lib.py` | Shared command-policy patterns imported by Codex and Claude hooks. |
+| `scripts/agent/run_framework_checks.sh` | One-command framework validation entrypoint. |
+| `scripts/agent/test_framework_policy.py` | Python smoke tests for framework policy behavior and script inventory. |
+
+### Optional GitHub Policy
+
+Copy `.github/` only when you are ready to configure repository settings.
+
+| Path | What it does | When it is active |
+| --- | --- | --- |
+| `.github/pull_request_template.md` | Shapes PR review information. | When PRs are opened on GitHub. |
+| `.github/workflows/ci.yml` | Runs generic framework and policy checks. | When GitHub Actions is enabled. |
+| `.github/workflows/dependency-review.yml` | Manual dependency review scaffold. | After Dependency Graph is enabled. |
+| `.github/CODEOWNERS` | Owner review policy template. | After real owners and branch protection are configured. |
+
+Remote policy is not real until GitHub Actions, branch protection, required
+checks, CODEOWNERS, and dependency-review prerequisites are configured and
+verified with a PR.
+
+## What To Customize Before First Agent Work
+
+Update these before asking an agent to build product behavior:
+
+- `AGENTS.md`: project-specific rules, permissions, quality gates, and doc map.
+- `docs/status/CURRENT_STATE.md`: current objective, active contract, gates,
+  last checks, working files, and next safest action.
+- `docs/repo-map.md`: project architecture, commands, test surfaces, and file
+  ownership.
+- `agent-adapters.md`: which adapters are active, optional, inert, or deferred.
+- `CLAUDE.md`: keep it thin and pointed at `AGENTS.md` plus repo-local skills.
+- `.github/CODEOWNERS`: replace placeholders before enabling code owner review.
+- `docs/project-charter.md`, `docs/roadmap.md`, and `docs/glossary.md` when the
+  project uses them.
+
+Keep `docs/status/CURRENT_STATE.md` compact. Put narrative evidence in
+`docs/worklog/`. Put restart-critical details in `docs/handoff/`.
+
+## Normal Workflow
+
+### Seed A New Project
+
+Use this when the project starts from owner notes, a large overview, or an
+existing repo without durable startup context.
 
 ```txt
-docs/specs/SPEC-0001-application-scaffold.md
-docs/plans/PLAN-0001-application-scaffold.md
-docs/plans/batches/BATCH-0001-application-scaffold.md
+Mode: Spec.
+
+Use the repo-local `project-intake-seeding` skill.
+
+Goal:
+Seed a new project from raw intake into durable startup docs, initial specs,
+initial plans, and proposed batches.
+
+Read:
+1. `AGENTS.md`
+2. `.agents/skills/project-intake-seeding/SKILL.md`
+3. The raw intake file supplied by the owner
+
+Do not write product code.
+Do not install dependencies.
+Do not access the network.
+
+Return:
+- Source docs used
+- Seeded docs created or updated
+- Initial specs and plans proposed
+- Open questions
+- Exact next prompt
 ```
 
-The application scaffold should define backend/frontend/shared structure, local commands, prerequisite tools, environment policy, dependency manifests, and test/lint/build command surfaces.
-
----
-
-## Repository layout
-
-A typical starter-kit layout should look like this:
+### Create A Spec
 
 ```txt
-.
-├── AGENTS.md
-├── README.md
-├── START_HERE.md
-├── AGENTIC_CODING_GUIDELINES.md
-├── PROMPT_LIBRARY.md
-├── BOUNDARY_AND_SANDBOX_POLICY.md
-├── LARGE_SPEC_SEEDING_PLAYBOOK.md
-├── docs/
-│   ├── intake/
-│   │   └── PROJECT_OVERVIEW_RAW.md
-│   ├── seed/
-│   ├── specs/
-│   │   └── _template.md
-│   ├── plans/
-│   │   ├── _template.md
-│   │   └── batches/
-│   │       └── _template.md
-│   ├── adr/
-│   │   └── _template.md
-│   ├── worklog/
-│   ├── standards/
-│   └── setup/
-├── .github/
-│   ├── pull_request_template.md
-│   └── workflows/
-├── .githooks/
-└── scripts/
+Mode: Spec.
+
+Use the repo-local `controlled-planning-docs` skill.
+
+Goal:
+Create a new spec from durable repo context, not chat history.
+
+Read:
+1. `AGENTS.md`
+2. `docs/repo-map.md`
+3. `docs/status/CURRENT_STATE.md`
+4. `docs/project-charter.md`, `docs/roadmap.md`, and `docs/glossary.md` when present
+5. Existing nearby specs for numbering and scope boundaries
+
+Do not edit plans, application code, dependencies, lockfiles, CI, deployment,
+generated files, or secrets.
 ```
 
-Not every real project needs every file forever, but the structure is designed so agents can quickly find the right source of truth.
-
----
-
-## Quick start for a new project
-
-### 1. Create a new repo
-
-Create your new GitHub/local repo normally.
-
-Then copy the starter kit files into the new repo.
-
-Recommended minimum:
+### Create A Plan
 
 ```txt
-AGENTS.md
-README.md
-docs/
-.github/
-.githooks/
-scripts/
+Mode: Plan.
+
+Use the repo-local `controlled-planning-docs` skill.
+
+Goal:
+Create an implementation plan for the accepted spec.
+
+Read:
+1. `AGENTS.md`
+2. `docs/repo-map.md`
+3. `docs/status/CURRENT_STATE.md`
+4. `.agents/skills/controlled-planning-docs/SKILL.md`
+5. `.agents/skills/controlled-planning-docs/references/plan-hardening.md`
+6. The accepted spec
+7. Directly affected source, test, and docs files named by the spec
+
+Do not edit specs unless explicitly asked.
+Do not edit application code.
+Do not install dependencies.
+Do not access the network.
 ```
 
-### 2. Add your raw project overview
-
-Paste the large founding overview into:
-
-```txt
-docs/intake/PROJECT_OVERVIEW_RAW.md
-```
-
-This file is treated as an intake artifact.
-
-It is allowed to be long, messy, exploratory, and comprehensive.
-
-Future agents should not keep rereading it every session. The seeding process extracts durable source-of-truth docs from it.
-
-### 3. Run the seeding prompt
-
-Use the seeding prompt from:
-
-```txt
-PROMPT_LIBRARY.md
-```
-
-or the large-spec seeding skill if your agent system supports skills.
-
-The seeding pass should create the controlled project starting point:
-
-```txt
-docs/project-charter.md
-docs/glossary.md
-docs/repo-map.md
-docs/roadmap.md
-docs/specs/SPEC-0000-project-foundation.md
-docs/specs/SPEC-0001-application-scaffold.md
-docs/plans/PLAN-0001-application-scaffold.md
-docs/plans/batches/BATCH-0001-application-scaffold.md
-docs/seed/SEED-0000-project-decomposition.md
-docs/seed/SEED-0000-results.md
-docs/worklog/0000-seeding-notes.md
-```
-
-It may also create:
-
-```txt
-docs/adr/ADR-0000-architecture-direction.md
-```
-
-only if the raw overview explicitly or strongly implies architecture choices.
-
-### 4. Review the seeded documents
-
-Before implementation, run a review-only pass.
-
-The agent should check:
-
-- Are the specs implementation-safe?
-- Are the first plans small enough?
-- Are the proposed batches reasonable?
-- Is the first human-testable milestone identified?
-- Are approval classes correct?
-- Are assumptions and open questions visible?
-
-Do not start coding until the first implementation batch is clear.
-
-### 5. Execute the first application scaffold batch
-
-The first implementation batch should usually be:
-
-```txt
-docs/plans/batches/BATCH-0001-application-scaffold.md
-```
-
-This creates the actual project skeleton.
-
-It may create files and directories such as:
-
-```txt
-backend/
-frontend/
-shared/
-tests/
-.env.example
-Makefile
-README.md
-docs/setup/local-prerequisites.md
-```
-
-It should not implement real product behavior yet.
-
----
-
-## Document maturity levels
-
-Use maturity levels to prevent overplanning.
-
-| Level | Meaning |
-|---|---|
-| M0 | Intake: raw unprocessed material |
-| M1 | Seeded: extracted into controlled docs |
-| M2 | Specified: requirements and acceptance criteria are clear |
-| M3 | Planned: implementation steps and validation are clear |
-| M4 | Executable: safe for agent implementation |
-| M5 | Validated: implemented and checked |
-
-During seeding:
-
-- `docs/project-charter.md` should reach M1/M2.
-- `docs/specs/SPEC-0000-project-foundation.md` should reach M1/M2.
-- The first 1–3 implementation specs should reach M2.
-- The first 1–3 matching plans should reach M3/M4.
-- Future work should remain in `docs/roadmap.md` as roadmap items, spec candidates, ADR candidates, open questions, or deferred decisions.
-
-Do not create 20 fully detailed specs and plans from the raw overview unless the early implementation path is unusually clear.
-
----
-
-## Specs, plans, and batches
-
-### Spec
-
-A spec defines **what must be true**.
-
-Specs belong in:
-
-```txt
-docs/specs/
-```
-
-Example:
-
-```txt
-docs/specs/SPEC-0001-application-scaffold.md
-```
-
-A spec should include:
-
-- purpose,
-- scope,
-- non-goals,
-- requirements,
-- acceptance criteria,
-- dependencies,
-- approval class,
-- automated gate,
-- human gate,
-- stop conditions.
-
-### Plan
-
-A plan defines **how to implement one accepted spec**.
-
-Plans belong in:
-
-```txt
-docs/plans/
-```
-
-Example:
-
-```txt
-docs/plans/PLAN-0001-application-scaffold.md
-```
-
-A plan should include:
-
-- linked spec,
-- expected file changes,
-- implementation steps,
-- validation commands,
-- documentation updates,
-- local commit strategy,
-- risks,
-- stop conditions.
-
-### Batch
-
-A batch defines **which already-written specs/plans may be executed together**.
-
-Batches belong in:
-
-```txt
-docs/plans/batches/
-```
-
-Example:
-
-```txt
-docs/plans/batches/BATCH-0001-application-scaffold.md
-```
-
-A batch should not define the project from scratch.
-
-It should group related specs/plans so the agent can safely continue through low-risk work without asking for human approval after every small step.
-
----
-
-## Approval classes
-
-Every meaningful spec, plan, or batch should declare an approval class.
-
-| Class | Meaning | Agent behavior |
-|---|---|---|
-| A0 | No human approval needed | Continue if checks pass |
-| A1 | Batch approval only | Complete the batch, then summarize |
-| A2 | Human checkpoint required | Stop when human judgment adds value |
-| A3 | Hard approval required | Ask before taking action |
-
-Examples:
-
-| Work | Typical class |
-|---|---|
-| Documentation cleanup | A0 |
-| Repo/application scaffold | A1 |
-| Core non-user-testable backend scaffolding | A1 |
-| First usable UI flow | A2 |
-| Physical hardware test point | A2 |
-| Dependency install | A3 |
-| Network access | A3 |
-| Deployment | A3 |
-| Secrets/API keys | A3 |
-
-The agent should not ask for approval just because a local commit, spec, or plan is complete.
-
-It should stop only when human judgment changes the outcome.
-
----
-
-## Permission and sandbox policy
-
-The recommended default is:
-
-```txt
-Inside the repo: mostly autonomous.
-Outside the repo: no.
-Internet: ask.
-Dependencies: ask.
-Secrets/system: never.
-Git local: yes.
-Git remote: ask.
-```
-
-Agents may generally perform:
-
-```txt
-read/edit files inside repo
-create files/directories inside repo
-run tests/lint/typecheck/build
-run git status/diff/add/commit
-```
-
-Agents must ask before:
-
-```txt
-installing dependencies
-using network access
-changing lockfiles
-running destructive commands
-pushing branches
-creating PRs
-modifying CI/CD
-touching deployment files
-```
-
-Agents must not:
-
-```txt
-use sudo
-install global packages
-read secrets
-write outside the repo
-touch OS settings
-control other applications
-use curl | bash
-```
-
-If approval is required, the request should include:
-
-```txt
-Action:
-Exact command:
-Why needed:
-Scope:
-Risk:
-Fallback if denied:
-```
-
-Vague approval requests should be denied.
-
----
-
-## Token optimization strategy
-
-This kit reduces token usage by moving repeated context into stable files.
-
-The agent should normally read:
-
-```txt
-AGENTS.md
-docs/repo-map.md
-active spec
-active plan or batch
-directly relevant source files
-```
-
-The agent should not repeatedly load:
-
-```txt
-the full raw project overview
-all specs
-all plans
-all worklogs
-entire source tree
-```
-
-Use this hierarchy:
-
-```txt
-L0 — Always:
-AGENTS.md, current user instruction
-
-L1 — Serious task:
-docs/repo-map.md, active spec, active plan or batch
-
-L2 — Only as needed:
-relevant source files, tests, and implementation docs
-```
-
-Use bare output during implementation:
+### Execute A Plan
 
 ```txt
 Mode: Implementation.
-Output style: bare engineering.
 
-Do not narrate routine steps.
-Only report blockers, change requests, test failures, or final summary.
+Use the repo-local `accepted-plan-implementation` skill.
+
+Execute `[PLAN or BATCH path]` exactly.
+
+Do not expand scope.
+Do not install dependencies or access the network unless the accepted plan
+explicitly approves it.
+Do not push or open a PR.
+
+Before editing, run:
+git status --short
+
+Before final response:
+- Run the plan's required checks.
+- Update `docs/status/CURRENT_STATE.md`.
 ```
 
-Do not use bare output during seeding, planning, or review, where reasoning needs to be visible.
-
----
-
-## How to maintain the real project README.md
-
-Every real project built from this kit should have its own root `README.md`.
-
-That README is not the same as this starter-kit README.
-
-The real project README should explain the application, not the agent process.
-
-### Real project README responsibilities
-
-A real project README should include:
+### Review Work
 
 ```txt
-project name
-short description
-current status
-tech stack
-repo layout
-prerequisites
-setup instructions
-environment variables
-local development commands
-test/lint/build commands
-how to run the app
-known limitations
-links to key docs
-```
+Mode: Review.
 
-### Recommended real project README structure
+Review the current diff against the accepted spec, plan, or batch.
 
-```md
-# Project Name
-
-Brief description of what the project does.
-
-## Status
-
-Current maturity:
-- Prototype / MVP / Active development / Production
-- Current milestone
-- First human-testable flow, if applicable
-
-## Tech Stack
-
-- Frontend:
-- Backend:
-- Database:
-- Mobile:
-- Infrastructure:
-- Package manager:
-
-## Prerequisites
-
-List required local tools.
-
-Example:
-
-- Node.js:
-- Python:
-- Docker:
-- GitHub CLI:
-- Xcode / Android Studio:
-- Database:
-
-## Setup
-
-```bash
-# install dependencies
-# copy env file
-# run setup commands
-```
-
-## Environment Variables
-
-Use `.env.example` as the source of truth.
-
-| Variable | Required | Purpose |
-|---|---|---|
-| `EXAMPLE_VAR` | Yes | Example only |
-
-Never commit real secrets.
-
-## Local Development
-
-```bash
-# start backend
-# start frontend
-# run full app
-```
-
-## Tests and Checks
-
-```bash
-# test
-# lint
-# typecheck
-# build
-```
-
-## Repo Layout
-
-```txt
-backend/
-frontend/
-shared/
-docs/
-tests/
-```
-
-## Agent Workflow
-
-This project uses controlled agentic development.
-
-Agents should read:
-
-1. `AGENTS.md`
-2. `docs/repo-map.md`
-3. the active spec
-4. the active plan or batch
-
-Agents should not use `docs/intake/PROJECT_OVERVIEW_RAW.md` as the normal working spec.
-
-## Key Project Docs
-
-- `docs/project-charter.md`
-- `docs/specs/SPEC-0000-project-foundation.md`
-- `docs/roadmap.md`
-- `docs/repo-map.md`
-- `docs/adr/`
-- `docs/plans/batches/`
-
-## Current Milestone
-
-Describe the current implementation target.
-
-## Known Limitations
-
-List anything intentionally not built yet.
-```
-
-### When agents should update the real project README
-
-The README should be updated when:
-
-- setup commands change,
-- prerequisites change,
-- environment variables change,
-- repo structure changes,
-- run/test/build commands change,
-- the project status changes,
-- the first human-testable flow changes,
-- deployment or installation instructions change.
-
-The README should not be updated for every small internal refactor.
-
-### README update rule for agents
-
-Add this to project instructions:
-
-```txt
-If implementation changes how a developer installs, runs, tests, configures, or understands the project structure, update README.md in the same plan or open a Change Request explaining why the README update is needed.
-```
-
----
-
-## Recommended first agent session
-
-After copying this kit into a new repo and adding `PROJECT_OVERVIEW_RAW.md`, use:
-
-```txt
-Mode: Project Seeding / Spec Decomposition.
-
-Read:
-1. AGENTS.md
-2. docs/intake/PROJECT_OVERVIEW_RAW.md
-
-Do not write application code.
-Do not create production application files.
-Do not install dependencies.
-Do not access the network.
-Do not run framework generators.
-
-Goal:
-Convert the raw project overview into controlled project documents, decomposed specs, decomposed plans, and proposed execution batches.
-
-Important distinction:
-This is not batch execution.
-This is repo seeding and project decomposition.
-
-The purpose is to create the starting point that future batch execution will use.
-
-Output:
-- project charter
-- glossary
-- repo map
-- roadmap
-- foundation spec
-- first 1–3 implementation specs
-- first 1–3 implementation plans
-- first 1–2 proposed batches
-- seeding notes
-- ADR only if justified
-
-Depth policy:
-Be broad but shallow across the whole project.
-Be deep only for the first implementation-safe slices.
-Do not fully specify or plan the entire project from the raw overview.
-```
-
----
-
-## Recommended second agent session
-
-After seeding, run review:
-
-```txt
-Mode: Review only.
-
-Read:
-1. AGENTS.md
-2. docs/seed/SEED-0000-results.md
-3. docs/roadmap.md
-4. docs/specs/SPEC-0000-project-foundation.md
-5. docs/plans/batches/BATCH-0001-*.md
-
-Review the seeded project control documents.
-
-Do not write code.
-Do not install dependencies.
-
-Check:
-1. Are the specs decomposed into implementation-safe chunks?
-2. Are the plans small enough to execute safely?
-3. Are the proposed batches grouped correctly?
-4. Are any batches too broad?
-5. Is the first human-testable milestone clearly identified?
-6. Are approval classes assigned correctly?
-7. Are there missing docs before implementation should begin?
+Do not edit files.
+Do not implement.
 
 Return:
-- blocking issues
-- non-blocking improvements
-- recommended edits
-- whether BATCH-0001 is ready for execution
+- Blocking issues
+- Non-blocking improvements
+- Whether the work is completion-ready
+- Exact next prompt
 ```
 
----
+## Useful Commands
 
-## Recommended third agent session
+Run from the repo root:
 
-Execute the first application scaffold batch:
-
-```txt
-Mode: Batch Implementation.
-
-Read:
-1. AGENTS.md
-2. docs/repo-map.md
-3. docs/plans/batches/BATCH-0001-application-scaffold.md
-4. all specs and plans referenced by the batch
-
-Execute only the accepted batch.
-
-Continue automatically through A0/A1 work.
-
-Stop only if:
-- an A2 human checkpoint is reached,
-- an A3 approval is required,
-- automated checks fail and cannot be fixed within accepted scope,
-- a Change Request is required,
-- scope expands beyond the batch.
+```bash
+make preflight
+make finalize
+make install-hooks
+make new-task TASK=0001 SLUG=short-name
 ```
 
----
+Direct script equivalents:
 
-## What agents should not do
-
-Agents should not:
-
-- treat the raw overview as the permanent spec,
-- implement code during seeding,
-- create 20 detailed specs/plans from the initial overview,
-- ask for approval after every local commit,
-- silently change accepted specs during implementation,
-- install dependencies without approval,
-- use network access without approval,
-- modify files outside the repo,
-- create late-stage plans before early implementation has validated the foundation.
-
----
-
-## Change Requests
-
-If implementation reveals that an accepted spec or plan is wrong, the agent should stop and open a Change Request.
-
-A Change Request should include:
-
-```md
-# Change Request: CR-0001
-
-## Trigger
-
-What did implementation reveal?
-
-## Current accepted spec says
-
-What requirement or assumption is affected?
-
-## Proposed change
-
-What should change?
-
-## Why this is necessary
-
-Why can’t the current plan complete cleanly?
-
-## Impact
-
-- Scope:
-- Files:
-- Tests:
-- Docs:
-- Risks:
-- Token/context impact:
-
-## Recommendation
-
-Accept / Reject / Defer
+```bash
+bash scripts/agent/agent_preflight.sh
+bash scripts/agent/agent_finalize.sh
+bash scripts/agent/install_git_hooks.sh
+bash scripts/agent/run_framework_checks.sh
+python3 scripts/agent/test_framework_policy.py
 ```
 
-The agent should not silently modify the spec and keep coding.
+`make seed-spec` is currently stale if it still points at the removed
+`scripts/agent/seed_large_spec.sh`; use `project-intake-seeding` instead.
 
----
+## Verification
 
-## Pull request expectations
+After setup, verify the framework with:
 
-A pull request should represent a meaningful review unit.
-
-Do not require a PR after every small spec if the work is still non-user-testable scaffolding.
-
-Use PRs for:
-
-- completed scaffold batch,
-- first user-testable milestone,
-- architecture slice,
-- CI-clean foundation,
-- deployable increment,
-- human-review checkpoint.
-
-Every PR should include:
-
-```txt
-summary
-linked specs/plans/batches
-tests run
-docs updated
-risks
-deviations
-screenshots or manual test notes if user-facing
+```bash
+bash scripts/agent/run_framework_checks.sh
+python3 scripts/agent/test_framework_policy.py
+git diff --check
 ```
 
----
+After installing local hooks intentionally:
 
-## How to evolve this kit
+```bash
+git config core.hooksPath
+bash -n .githooks/commit-msg .githooks/pre-commit .githooks/pre-push
+python3 scripts/agent/test_framework_policy.py
+```
 
-This starter kit should remain small and process-focused.
+Adapter checks:
 
-Good changes:
+```bash
+python3 -m py_compile .codex/hooks/*.py .claude/hooks/*.py scripts/agent/*.py
+python3 .agents/skills/controlled-planning-docs/scripts/check_planning_doc.py docs/status/CURRENT_STATE.md
+```
 
-- improve templates,
-- clarify approval classes,
-- add stack-specific examples,
-- add better hooks,
-- improve prompt library,
-- refine sandbox rules.
+Remote GitHub policy requires one verification PR after repository settings are
+configured.
 
-Bad changes:
+## What Not To Copy
 
-- adding product-specific implementation details,
-- turning the starter kit into a framework template,
-- making every possible tool mandatory,
-- growing AGENTS.md into a giant manual,
-- creating rules that force human approval when no human judgment is needed.
+Do not copy project-specific or generated material into a new project unless you
+are intentionally adapting it:
 
-When you discover a better practice in a real project, extract the general rule back into this starter kit only if it will help future projects too.
+- old `docs/specs/SPEC-*.md`;
+- old `docs/plans/PLAN-*.md`;
+- old `docs/plans/batches/BATCH-*.md`;
+- old `docs/change-requests/CR-*.md`;
+- old `docs/worklog/*.md`;
+- old `docs/handoff/*.md`;
+- product docs such as `docs/project-charter.md`, `docs/roadmap.md`,
+  `docs/glossary.md`, and `docs/repo-map.md` unless rewritten for the new
+  project;
+- raw intake from a different project;
+- product source, tests, deployment files, domain data, screenshots, or manual
+  test artifacts;
+- generated folders such as `dist/`, `.venv/`, `.pytest_cache/`, `__pycache__/`,
+  `node_modules/`, and `*.egg-info`;
+- secrets, credentials, local machine settings, browser profiles, shell startup
+  files, or private keys.
 
----
+## Current Adapter Summary
 
-## Summary
+| Area | Current intent | Verification |
+| --- | --- | --- |
+| Codex | Native project config and hooks under `.codex/`. | Codex loads project config; hooks import shared `scripts/agent/policy_lib.py`. |
+| Claude | Native `CLAUDE.md`, settings, hooks, output style, and slash-command wrappers. | Hook blocks denied commands; skill slash commands are available. |
+| Cursor | Always-on project rule guidance. | Cursor applies `.cursor/rules/agentic-development.mdc`. |
+| Repo-local skills | Task-triggered workflow helpers. | Skill frontmatter and referenced files exist. |
+| Git hooks | Manual local guardrails. | `git config core.hooksPath` prints `.githooks`. |
+| GitHub Actions | Optional remote policy. | Verification PR runs expected checks. |
+| CODEOWNERS | Optional remote review policy. | Real owner/team receives review request. |
+| Dependency review | Optional remote dependency guardrail. | Dependency Graph enabled and workflow passes. |
 
-Use this kit to create controlled momentum.
+## Open Questions To Review
 
-The raw overview preserves the full vision.
+These are the current question marks to resolve as this README becomes the final
+copy guide:
 
-The seeding pass creates the first stable project control layer.
-
-Specs define what must be true.
-
-Plans define how to implement.
-
-Batches define when the agent may continue without low-value human approvals.
-
-Change Requests prevent silent scope drift.
-
-The README keeps humans oriented.
-
-The result is agentic development that is faster, cleaner, safer, and easier to review.
+1. Should there be a real `framework-kit/` directory with `MANIFEST.md` and
+   `verify_framework_kit.py`, or should the manifest-based copy-kit concept be
+   removed from the docs?
+2. Should `agentic-workflow-manual.md` be moved to
+   `docs/AGENTIC_WORKFLOW_MANUAL.md`, since the adapters and scripts reference
+   that path?
+3. Should `README2.md` be deleted after this README absorbs the current system,
+   or kept as a scratch/review file until the copy surface is finalized?
+4. Should `docs/repo-map.md` and `docs/status/CURRENT_STATE.md` exist in this
+   starter repo as template-like examples, or should only `_template.md` files be
+   committed?
+5. Should `docs/change-requests/_template.md` be restored as a required template?
+6. Should `docs/standards/` be restored, kept optional, or removed from all copy
+   guidance?
+7. Should `docs/project-charter.md`, `docs/roadmap.md`, and `docs/glossary.md`
+   be part of the starter copy surface, or only generated by
+   `project-intake-seeding` in each new project?
+8. Should `.github/` be copied by default as optional remote policy, or omitted
+   until a project is ready for GitHub settings?
+9. Should `.claude/settings.json` be committed as active project config, or
+   should only `.claude/settings.example.json` be copied to future projects?
+10. Should `make seed-spec` be removed now that `seed_large_spec.sh` has been
+    folded into the `project-intake-seeding` skill?
+11. Should local generated `__pycache__/` directories be cleaned from this
+    working tree before the starter kit is finalized?
+12. Which file should be the single canonical human entrypoint:
+    `README.md`, `docs/AGENTIC_WORKFLOW_MANUAL.md`, or both with distinct jobs?

@@ -9,8 +9,7 @@ git status --short
 echo "-- git diff --stat"
 git diff --stat || true
 
-echo "-- syntax check helper scripts"
-bash -n scripts/agent/*.sh .githooks/*
-python3 -m py_compile scripts/agent/*.py .codex/hooks/*.py
+echo "-- framework checks"
+bash scripts/agent/run_framework_checks.sh
 
-echo "Finalize complete. Run project-specific lint/typecheck/test/build commands listed in docs/repo-map.md."
+echo "Finalize complete. Run project-specific lint/typecheck/test/build commands listed in the active plan or docs/repo-map.md."

@@ -1,21 +1,20 @@
 # Worklog: YYYY-MM-DD Task
 
-## Session goal
+## How to write this worklog
 
-## Inputs read
+Use this section while drafting, then remove it from the worklog.
 
-- `AGENTS.md`
-- Spec:
-- Plan:
+- Read `.agents/skills/controlled-planning-docs/references/status-handoff-worklog.md`.
+- Capture research evidence, failed approaches, decisions, and follow-up.
+- Keep restart-critical state in `docs/status/CURRENT_STATE.md` or `docs/handoff/`.
+- Do not paste long logs; summarize and cite commands/files.
 
-## Actions taken
+## Question Or Hypothesis
 
-## Decisions made
+## Evidence Gathered
 
-## Tests/checks run
+## Result
 
-## Open blockers
+## Decision
 
-## Carry-forward summary
-
-Use this section when compacting or starting a fresh session.
+## Follow-up

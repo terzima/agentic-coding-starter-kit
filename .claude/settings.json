@@ -1,0 +1,55 @@
+{
+  "outputStyle": "Bare Engineering",
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git branch*)",
+      "Bash(git switch *)",
+      "Bash(git checkout -b *)",
+      "Bash(git worktree *)",
+      "Bash(rg *)",
+      "Bash(find . *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(bash -n *)",
+      "Bash(python3 -m py_compile *)",
+      "Bash(python3 .agents/skills/controlled-planning-docs/scripts/check_planning_doc.py *)",
+      "Bash(python3 scripts/agent/test_framework_policy.py)",
+      "Bash(bash scripts/agent/run_framework_checks.sh*)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(gh pr create *)",
+      "Bash(npm install*)",
+      "Bash(pnpm install*)",
+      "Bash(pip install*)",
+      "Bash(uv sync*)",
+      "Bash(docker *)",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(curl * | sh*)",
+      "Bash(wget * | sh*)",
+      "Bash(rm -rf /*)",
+      "Bash(chmod -R 777 *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/pre_tool_use_policy.py"
+          }
+        ]
+      }
+    ]
+  }
+}

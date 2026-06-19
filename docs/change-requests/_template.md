@@ -1,10 +1,21 @@
 # CR-XXXX: Title
 
 Status: Proposed | Accepted | Rejected | Deferred
-Owner: TBD
+Owner: Unassigned
 Created: YYYY-MM-DD
 Related spec:
 Related plan:
+Trigger type: Implementation discovery | Research failure | Product decision | Policy/tooling limitation
+
+## How to write this Change Request
+
+Use this section while drafting, then remove it after a decision.
+
+- Read `.agents/skills/controlled-planning-docs/references/change-request-writing.md`.
+- Explain the failed assumption and why the accepted spec/plan cannot continue cleanly.
+- Quote or summarize the current accepted contract.
+- Name the proposed change, file/test/docs impact, risks, and recommendation.
+- Do not edit implementation code for this change until the request is accepted.
 
 ## Trigger
 

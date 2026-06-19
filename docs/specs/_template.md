@@ -1,95 +1,111 @@
 # SPEC-XXXX: Title
 
 Status: Draft | Accepted | Superseded
-Owner: TBD
+Maturity: M1 | M2 | M3 | M4
+Owner: Unassigned
 Created: YYYY-MM-DD
 Updated: YYYY-MM-DD
 Related plan: `docs/plans/PLAN-XXXX-title.md`
-Related ADRs:
-Related Change Requests:
+Related ADRs: None
+Related Change Requests: None
 
-## Problem statement
+## How to write this spec
 
-What problem are we solving?
+Use this section while drafting, then remove it before acceptance.
+
+- Read `.agents/skills/controlled-planning-docs/references/spec-writing.md`.
+- State what must be true, not how to implement every step.
+- Cite durable source docs and current evidence.
+- Separate accepted behavior from assumptions, open questions, and roadmap ideas.
+- Define exact interfaces, data shapes, validation rules, and errors where a planner would otherwise guess.
+- Keep repo-wide permission, git, and Change Request policy out of this file; reference `AGENTS.md`.
+- Every requirement needs an automated, manual, or human acceptance gate.
+
+## Context
+
+- Source docs:
+- Current evidence:
+- Why this slice now:
+- Evidence threshold:
+
+## Problem
+
+State the concrete problem this spec solves in 1-3 sentences.
 
 ## Goals
 
-- Goal 1
-- Goal 2
+- Goal:
 
 ## Non-goals
 
-- Non-goal 1
-- Non-goal 2
+- Non-goal:
 
 ## Users / actors
 
-- Actor 1:
-- Actor 2:
+- Actor:
 
-## User-visible behavior
+## Behavioral contract
 
-Describe what must be true from the user's perspective.
+Describe externally visible behavior and key system responsibilities.
 
-## Functional requirements
+- User-visible behavior:
+- System responsibilities:
+- Explicitly unchanged behavior:
+
+## Interface and data contract
+
+Use only sections that apply. Include exact names/shapes when crossing module or process boundaries.
+
+- Files or modules:
+- Public functions/classes:
+- API routes/events:
+- Data shapes/schemas:
+- Config keys/env vars:
+- Error codes/messages:
+
+## Requirements
+
+### Functional
 
 - FR-1:
-- FR-2:
 
-## Non-functional requirements
+### Non-functional
 
 - Performance:
-- Security:
-- Privacy:
-- Reliability:
+- Security/privacy:
 - Accessibility:
 - Observability:
+- Maintainability:
 
-## Technical constraints
+## Dependencies and approvals
 
-- Constraint 1:
-- Constraint 2:
+- Prerequisite specs/plans:
+- Existing files to read first:
+- Approval-required actions:
 
-## Approval Class
+## Acceptance gates
 
-A0 / A1 / A2 / A3
+### Automated
 
-## Human Gate
+```bash
+git status --short
+```
 
-Does this require human review before the next task?
+### Human
 
-- Yes / No
+- Required? Yes / No
+- Reason:
 
-If yes, why?
+### Manual checks
 
-## Automated Gate
+- Manual check:
 
-What proves this is complete without human review?
+## Risks and open questions
 
-- [ ] Tests pass
-- [ ] Typecheck passes
-- [ ] Lint passes
-- [ ] Build passes
-- [ ] CI passes
-- [ ] Docs updated
-- [ ] No unplanned files changed
+- Risk:
+- Open question:
+- Evidence gap:
 
-## Acceptance criteria
+## Stop conditions
 
-- [ ] AC-1:
-- [ ] AC-2:
-- [ ] AC-3:
-
-## Out of scope
-
-- Item 1:
-- Item 2:
-
-## Open questions
-
-- [ ] Question 1:
-- [ ] Question 2:
-
-## Notes
-
-Any additional context.
+- Stop if:

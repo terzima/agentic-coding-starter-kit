@@ -4,17 +4,31 @@
 
 Make small, reviewable, well-tested changes. Prefer explicitness over cleverness. Do not expand scope without opening a Change Request.
 
-## Required operating mode
+Use durable repo files as the handoff surface. A future agent should be able to resume from `AGENTS.md`, `docs/repo-map.md`, `docs/status/CURRENT_STATE.md`, and the active spec/plan/batch without relying on chat history.
+
+## Operating modes
 
 Declare one mode before working:
 
 - **Discovery**: read-only repo inspection.
+- **Spike**: bounded research or experimentation where the output is evidence, not accepted production behavior.
 - **Spec**: write or revise requirements only.
 - **Plan**: produce implementation steps only.
-- **Implementation**: edit code only according to an accepted plan.
+- **Implementation**: edit only according to an accepted plan.
 - **Review**: inspect diffs, tests, risks, and docs.
 
 Do not combine Spec, Plan, and Implementation in one pass unless explicitly instructed.
+
+Spike mode must state:
+
+- question or hypothesis,
+- allowed files or surfaces,
+- evidence to collect,
+- budget or kill criteria,
+- output destination, and
+- promotion rule.
+
+Spike output must not become accepted implementation behavior until it is captured in an accepted spec or plan.
 
 ## Change control
 
@@ -42,6 +56,7 @@ L0 always:
 
 L1 serious task:
 - docs/repo-map.md
+- docs/status/CURRENT_STATE.md
 - active spec
 - active plan
 
@@ -53,7 +68,27 @@ L2 only when needed:
 
 Do not load unrelated files into context. Do not read the whole repo unless the task is explicitly architectural or the relevant area is unknown.
 
-## Bare implementation output
+Do not load `docs/intake/PROJECT_OVERVIEW_RAW.md` routinely during implementation. Use seeded docs and active specs/plans instead.
+
+## Handoff, status, and worklog policy
+
+New agent sessions should start by reading:
+
+1. `AGENTS.md`
+2. `docs/repo-map.md`
+3. `docs/status/CURRENT_STATE.md`
+4. The active spec/plan/batch listed in `docs/status/CURRENT_STATE.md`
+5. Directly relevant source files
+
+`docs/status/CURRENT_STATE.md` is a compact startup dashboard. It should contain the active objective, active contract, branch/worktree state, blocking gates, last verified checks, current working files, and next safest action.
+
+`docs/worklog/` is for narrative session evidence, failed approaches, research notes, and decisions that may inform future reasoning.
+
+`docs/handoff/` is for concise restart packages when work is incomplete, blocked, interrupted, or complex enough that the next agent needs a restart point.
+
+At the end of every meaningful implementation session, update `docs/status/CURRENT_STATE.md`. Create or update a handoff file only when it changes future action.
+
+## Implementation output contract
 
 During Implementation mode, do not narrate routine steps. Report only:
 
@@ -62,49 +97,81 @@ During Implementation mode, do not narrate routine steps. Report only:
 - `CHECK FAILED:` verification failed.
 - `DONE:` final summary.
 
-Final summary must include:
+Final implementation summaries must include:
 
 1. Summary of changes.
 2. Files changed.
-3. Tests run.
+3. Tests/checks run.
 4. Docs updated.
 5. Deviations from plan.
 6. Remaining risks.
+7. Next action.
 
-## Allowed without repeated approval inside the worktree
+## Permission policy
+
+The agent should avoid asking for approval for routine safe repo-local work.
+
+Auto-allowed inside the active repo/worktree:
 
 - Read local non-secret project files.
-- Search with `rg`, `find`, `ls`, and similar local tools.
-- Edit files listed in the accepted plan.
-- Run documented lint/typecheck/test/build commands.
-- `git status`, `git diff`, `git add`, `git commit`, `git branch`, `git switch`, `git checkout -b`, `git worktree list`.
+- Search with `rg`, `find`, `ls`, `grep`, `cat`, `head`, `tail`, and similar local tools.
+- Edit files inside the accepted plan.
+- Create directories/files inside the accepted plan.
+- Run documented lint, typecheck, test, build, and planning-doc checks.
+- Run local Git commands: `git status`, `git diff`, `git add`, `git commit`, `git branch`, `git switch`, `git checkout -b`, and `git worktree list`.
 - Create local task branches and local worktrees.
 
-## Ask before doing
+Ask before:
 
 - Accessing the network from commands.
 - Installing, updating, adding, or removing dependencies.
 - Downloading binaries, scripts, or remote assets.
-- Running `curl`, `wget`, `Invoke-WebRequest`, `npx` for remote execution, or equivalent network-fetch commands.
+- Running remote-fetch commands or remote execution helpers.
 - Running Docker with network, privileged mode, host mounts, or Docker socket access.
-- Modifying CI, deployment, infrastructure, auth, billing, or security policy files.
+- Modifying CI, deployment, infrastructure, auth, billing, or security policy files unless an accepted A3 plan explicitly includes those files.
 - Running schema migrations.
 - Reading or handling secrets.
-- Pushing a branch for the first time.
-- Opening a pull request.
+- Pushing a branch.
+- Opening or editing pull requests.
 - Modifying files outside the accepted plan.
+- Deleting files recursively.
 
-## Never do
+Never do:
 
-- Do not pipe remote content into a shell.
-- Do not use `sudo` or privilege escalation.
-- Do not install global system tools on the host.
-- Do not modify shell startup files, OS settings, or user/global Git config unless explicitly requested.
-- Do not read `.env`, private keys, credentials, or secret stores unless explicitly requested.
-- Do not write outside the repository/worktree.
-- Do not push directly to `main`, `master`, `prod`, `production`, or release branches.
-- Do not force-push unless explicitly approved.
-- Do not disable hooks, CI, tests, or security checks to make work pass.
+- Pipe remote content into a shell.
+- Use administrator elevation or privilege escalation.
+- Install global system tools on the host.
+- Modify shell startup files, OS settings, or user/global Git config unless explicitly requested.
+- Read environment files, private keys, credentials, browser profiles, keychains, cloud credentials, or unrelated documents unless explicitly requested.
+- Write outside the repository/worktree.
+- Push directly to `main`, `master`, `prod`, `production`, or release branches.
+- Force-push unless explicitly approved.
+- Disable hooks, CI, tests, or security checks to make work pass.
+
+Approval requests must include:
+
+- Action:
+- Exact command:
+- Why needed:
+- Scope:
+- Risk:
+- Fallback if denied:
+
+Human approval is required only when human input adds value: product judgment, UX judgment, physical/manual testing, business decisions, unsettled architecture tradeoffs, credentials/secrets/payment/deployment/external services, dependencies/network, destructive operations, or remote Git operations.
+
+Machine-verifiable work may continue when automated checks pass and accepted docs authorize the scope.
+
+Approval classes:
+
+- A0: no human approval needed; continue if automated checks pass.
+- A1: batch approval only; complete the batch, then summarize.
+- A2: human checkpoint required before continuing.
+- A3: hard approval required before taking the action.
+
+Default approval class:
+
+- Scaffolding, documentation setup, test harnesses, repo structure, local commits, and non-user-testable implementation default to A1.
+- Usable UI flows, physical hardware behavior, first end-to-end product flows, dependency changes, deployment, secrets, and external services default to A2 or A3.
 
 ## Dependency policy
 
@@ -148,11 +215,16 @@ test(scope): description
 chore(scope): description
 ```
 
+This repo uses Git hooks through `.githooks`. Do not bypass hooks with `--no-verify` unless explicitly approved.
+
+If a hook fails, fix the issue if it is within accepted scope. If fixing it requires changing scope, stop and open a Change Request.
+
 ## Quality gates
 
 Before completion:
 
 - Run relevant lint/typecheck/test/build commands.
+- Run relevant planning-doc checks for docs.
 - Update docs if behavior changed.
 - Confirm acceptance criteria.
 - Summarize changed files.
@@ -161,147 +233,31 @@ Before completion:
 
 ## Documentation map
 
+- `docs/AGENTIC_WORKFLOW_MANUAL.md`: human-facing framework manual, copy kit, prompt index, and troubleshooting.
 - `docs/project-charter.md`: stable product/project summary.
 - `docs/repo-map.md`: architecture map and commands.
+- `docs/status/CURRENT_STATE.md`: active project dashboard and next-action context.
+- `docs/handoff/`: concise restart packages.
 - `docs/specs/`: accepted/draft requirements.
 - `docs/plans/`: implementation plans.
+- `docs/plans/batches/`: execution batches.
 - `docs/change-requests/`: controlled scope changes.
 - `docs/adr/`: architecture decisions.
-- `docs/worklog/`: session notes and discoveries.
+- `docs/worklog/`: session notes, research evidence, and failed approaches.
 - `docs/standards/`: coding, testing, docs, security, dependency standards.
 
-## Large raw overview policy
+## Template discipline
 
-`docs/intake/PROJECT_OVERVIEW_RAW.md` is source material. Do not load it routinely during implementation. Use seeded docs and active specs/plans instead.
+Use the repo-local `controlled-planning-docs` skill when writing or revising specs, plans, batch plans, Change Requests, status dashboards, handoffs, repo maps, worklogs, or other durable project documentation.
 
-## Permission Policy
+Reference `AGENTS.md` for operating modes, permissions, approval classes, git rules, hooks, and Change Requests.
 
-The agent should avoid asking for approval for routine safe repo-local work.
+Put mission-critical reusable rules in `AGENTS.md`; put task-local contracts, interfaces, fixtures, commands, and gates in the spec/plan/batch.
 
-### Auto-allowed actions
+Delete template prompts and non-applicable sections before accepting a document.
 
-The agent may perform these without asking:
+Prefer concise tables, exact file/function/API contracts, and focused task slices over broad prose.
 
-- Read files inside the active repo.
-- Edit files inside the active repo.
-- Create directories/files inside the active repo.
-- Run local inspection commands such as `pwd`, `ls`, `find`, `rg`, `grep`, `cat`, `head`, `tail`.
-- Run local verification commands documented in `Makefile`, `package.json`, `pyproject.toml`, or `docs/repo-map.md`.
-- Run local Git commands including `git status`, `git diff`, `git add`, `git commit`, `git branch`, and `git checkout -b`.
+Plans should be executable without redesign: name files, public interfaces, validation commands, expected outputs, rollback steps, and stop conditions.
 
-## Git Hooks
-
-This repo uses Git hooks through `.githooks`.
-
-The agent must not bypass hooks with `--no-verify` unless explicitly approved.
-
-If a hook fails, the agent should fix the issue if it is within accepted scope.
-If fixing the hook failure requires changing scope, the agent must stop and open a Change Request.
-
-### Approval-required actions
-
-The agent must ask before:
-
-- Installing, updating, or removing dependencies.
-- Modifying lockfiles.
-- Using network access.
-- Running `git push`.
-- Creating or editing pull requests.
-- Modifying CI/CD workflows.
-- Modifying deployment, Docker, credentials, or environment configuration.
-- Deleting files recursively.
-- Running database migrations that change data.
-- Running commands that affect files outside the repo.
-
-### Hard-denied actions
-
-The agent must not:
-
-- Use `sudo`.
-- Install global packages.
-- Use `curl | bash` or equivalent remote-code execution.
-- Read secrets or credentials from the user’s home directory.
-- Modify files outside the active repo.
-- Modify OS settings.
-- Open or control other applications.
-- Access browser profiles, keychains, SSH keys, cloud credentials, or unrelated documents.
-
-### Approval request format
-
-When approval is required, the agent must provide:
-
-- Action:
-- Exact command:
-- Why needed:
-- Scope:
-- Risk:
-- Fallback if denied:
-
-Vague approval requests are invalid.
-
-## Human Approval Value Policy
-
-The agent must not ask for human approval merely because a spec, plan, or local commit is complete.
-
-Human approval is required only when human input adds value.
-
-### Machine-verifiable gates
-
-If the next step can be validated by automated checks, the agent may continue without human approval.
-
-Machine-verifiable checks include:
-
-- lint
-- typecheck
-- unit tests
-- integration tests
-- build
-- schema validation
-- static analysis
-- snapshot tests
-- generated file existence
-- no unplanned file modifications
-- no policy violations
-
-### Human-verifiable gates
-
-The agent must stop and request human input when the next decision depends on:
-
-- product judgment
-- UX judgment
-- visual/design taste
-- physical-device testing
-- manual app testing
-- business decision
-- architecture tradeoff not already settled by ADR/spec
-- credentials, secrets, payment, deployment, or external service setup
-- dependency installation or network access
-- destructive operation
-- remote Git operation if not explicitly authorized
-
-### Approval classes
-
-Every spec/plan must declare one approval class:
-
-- A0: no human approval needed; continue if automated checks pass.
-- A1: batch approval only; complete the batch, then summarize.
-- A2: human checkpoint required before continuing.
-- A3: hard approval required before taking the action.
-
-### Default approval class
-
-Scaffolding, documentation setup, test harnesses, repo structure, local commits, and non-user-testable implementation default to A1.
-
-Usable UI flows, physical hardware behavior, first end-to-end product flows, dependency changes, deployment, secrets, and external services default to A2 or A3.
-
-### Anti-pattern
-
-Do not stop after each local spec/plan/commit merely to ask for approval.
-
-Stop only when:
-1. automated validation fails,
-2. scope changed,
-3. a policy exception is needed,
-4. human judgment is required,
-5. physical/manual testing is now possible, or
-6. the current batch is complete.
+Do not paste large source material or long generated logs into specs/plans. Link to durable files and summarize only what implementation needs.

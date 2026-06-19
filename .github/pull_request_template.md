@@ -2,22 +2,34 @@
 
 <!-- What changed? -->
 
-# Linked control docs
+# Linked Control Docs
 
 - Spec:
 - Plan:
+- Batch:
 - ADRs:
 - Change Requests:
 
-# Acceptance criteria
+# Mode And Scope
 
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
+- Mode(s) used:
+- Files changed outside accepted plan: Yes / No
+- Generated files included intentionally: Yes / No
+- Known limitations or unproven evidence:
 
-# Implementation notes
+# Approval Gates
 
-<!-- Important design or behavior notes. -->
+- A2 human checkpoints reached:
+- A2 human checkpoints pending:
+- A3 actions performed:
+- A3 actions still pending:
+- Dependency/network/CI/policy changes:
+
+# Acceptance Criteria
+
+- [ ] Criteria from accepted docs are met
+- [ ] Deviations are documented
+- [ ] Change Requests are linked where scope changed
 
 # Tests
 
@@ -32,21 +44,14 @@ Commands run:
 - [ ] Typecheck
 - [ ] Lint
 - [ ] Build
+- [ ] Planning/framework checks
 
-# Risk review
+# Risk Review
 
 - Risk:
 - Mitigation:
 
-# Dependency review
-
-- [ ] No new production dependencies
-- [ ] New dependencies approved and justified in docs/change-requests or PR notes
-
-# Agent disclosure
+# Agent Disclosure
 
 - Agent/tool used:
-- Modes used:
-- Files modified outside accepted plan: Yes / No
-- Spec changed during implementation: Yes / No
-- Network/dependency install performed: Yes / No
+- Review notes:
