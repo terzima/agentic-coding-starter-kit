@@ -56,23 +56,47 @@ def run_pre_push(remote_ref: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def current_branch_name(env: dict[str, str] | None = None) -> str:
+    result = subprocess.run(
+        ["git", "symbolic-ref", "--short", "HEAD"],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        env=env,
+        check=False,
+    )
+    return result.stdout.strip() if result.returncode == 0 else ""
+
+
 def assert_remote_ref_policy() -> None:
     for ref in ("refs/heads/main", "refs/heads/master", "refs/heads/release/test"):
         result = run_pre_push(ref)
         assert result.returncode != 0, f"{ref} should be blocked"
         assert "protected remote branch" in result.stderr
 
-    current_branch = subprocess.check_output(
-        ["git", "symbolic-ref", "--short", "HEAD"],
-        cwd=ROOT,
-        text=True,
-        stderr=subprocess.DEVNULL,
-    ).strip()
+    current_branch = current_branch_name()
     result = run_pre_push("refs/heads/codex/test")
     if current_branch in {"main", "master", "prod", "production"} or current_branch.startswith("release/"):
         assert result.returncode != 0
     else:
         assert result.returncode == 0, result.stderr
+
+
+def assert_remote_ref_policy_handles_detached_head() -> None:
+    # GitHub Actions checks out pull requests in detached HEAD mode.
+    with tempfile.TemporaryDirectory() as temp_dir:
+        fake_bin = Path(temp_dir) / "git"
+        fake_bin.write_text(
+            "#!/usr/bin/env bash\n"
+            "if [ \"$1\" = \"symbolic-ref\" ]; then exit 128; fi\n"
+            "command git \"$@\"\n",
+            encoding="utf-8",
+        )
+        fake_bin.chmod(0o755)
+        env = os.environ.copy()
+        env["PATH"] = f"{temp_dir}:{env['PATH']}"
+        assert current_branch_name(env=env) == ""
 
 
 def run_change_control(changed_files: list[str]) -> subprocess.CompletedProcess[str]:
@@ -275,6 +299,7 @@ def main() -> int:
     assert_framework_checks_are_current()
     assert_makefile_does_not_call_removed_scripts()
     assert_hook_files_are_executable()
+    assert_remote_ref_policy_handles_detached_head()
     assert_remote_ref_policy()
     assert_sensitive_file_policy()
     assert_codeowners_has_no_active_placeholder()
