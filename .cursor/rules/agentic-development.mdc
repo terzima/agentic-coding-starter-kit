@@ -3,7 +3,7 @@ description: Controlled agentic development workflow, scope control, and token d
 alwaysApply: true
 ---
 
-Read `AGENTS.md` before coding. Use the required mode: Discovery, Spec, Plan, Implementation, or Review.
+Read `AGENTS.md` before coding. Use the required mode: Discovery, Spike, Spec, Plan, Implementation, or Review.
 
 Implementation mode rules:
 
@@ -19,3 +19,4 @@ Token discipline:
 - Do not scan the entire repo unless in Discovery mode.
 - Prefer `docs/repo-map.md`, active spec, and active plan over pasted history.
 - Do not load `docs/intake/PROJECT_OVERVIEW_RAW.md` during routine implementation.
+- Use Spike mode for bounded evidence gathering, then promote findings only through accepted specs or plans.

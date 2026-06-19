@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Adapter wrapper; policy patterns live in scripts/agent/policy_lib.py.
+import sys, os as _os
+sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', 'scripts', 'agent'))
 from policy_lib import classify_command, codex_permission_allow, codex_permission_deny, emit, get_command, load_stdin_json
 
 payload = load_stdin_json()
@@ -10,5 +13,4 @@ if classification == "allow":
 elif classification in {"deny", "ask"}:
     emit(codex_permission_deny(reason or "Blocked by repository approval policy."))
 else:
-    # No decision. User's normal approval flow applies.
     emit({})

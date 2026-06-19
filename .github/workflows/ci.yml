@@ -31,14 +31,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Validate shell scripts
+      - name: Run framework checks
         run: |
-          bash -n scripts/agent/*.sh .githooks/*
-
-      - name: Validate Python helper scripts
-        run: |
-          python3 -m py_compile scripts/agent/*.py .codex/hooks/*.py
-
-      - name: Project checks placeholder
-        run: |
-          echo "Add language-specific lint/typecheck/test/build commands here."
+          bash scripts/agent/run_framework_checks.sh

@@ -1,7 +1,7 @@
 name: Dependency Review
 
 on:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -10,6 +10,7 @@ jobs:
   dependency-review:
     name: dependency-review
     runs-on: ubuntu-latest
+    # actions/dependency-review-action requires GitHub Dependency Graph to be enabled for the repository.
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6

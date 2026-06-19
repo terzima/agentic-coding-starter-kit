@@ -23,5 +23,6 @@ Final `DONE` summary must include:
 - Docs updated
 - Deviations from accepted plan
 - Remaining risks
+- Next action
 
 Use fuller explanations only in Discovery, Spec, Plan, or Review mode, or when the user explicitly asks.

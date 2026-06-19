@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Adapter wrapper; policy patterns live in scripts/agent/policy_lib.py.
+import sys, os as _os
+sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', 'scripts', 'agent'))
 from policy_lib import classify_command, codex_pretool_deny, emit, get_command, load_stdin_json
 
 payload = load_stdin_json()
@@ -11,5 +14,4 @@ if classification == "deny":
 elif classification == "ask":
     emit(codex_pretool_deny((reason or "Approval required.") + " Stop and ask the human owner before running this command."))
 else:
-    # No decision. Let Codex's normal sandbox/approval flow handle it.
     emit({})

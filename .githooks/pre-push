@@ -9,4 +9,13 @@ case "$current_branch" in
     ;;
 esac
 
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main|refs/heads/master|refs/heads/prod|refs/heads/production|refs/heads/release/*)
+      echo "pre-push: push to protected remote branch '$remote_ref' is blocked" >&2
+      exit 1
+      ;;
+  esac
+done
+
 exit 0

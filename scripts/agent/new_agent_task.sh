@@ -10,12 +10,14 @@ fi
 TASK_ID="$1"
 SLUG="$2"
 BASE_BRANCH="${3:-main}"
+BRANCH_PREFIX="${AGENT_BRANCH_PREFIX:-codex}"
+BRANCH_PREFIX="${BRANCH_PREFIX%/}"
 
 repo_root=$(git rev-parse --show-toplevel)
 repo_name=$(basename "$repo_root")
 parent_dir=$(dirname "$repo_root")
 worktree_root="$parent_dir/${repo_name}-worktrees"
-branch="agent/${TASK_ID}-${SLUG}"
+branch="${BRANCH_PREFIX}/${TASK_ID}-${SLUG}"
 worktree_path="$worktree_root/${TASK_ID}-${SLUG}"
 
 mkdir -p "$worktree_root"
@@ -35,3 +37,5 @@ git worktree add -b "$branch" "$worktree_path" "$BASE_BRANCH"
 echo "Created worktree: $worktree_path"
 echo "Branch: $branch"
 echo "Next: cd '$worktree_path' && scripts/agent/agent_preflight.sh"
+echo "Then start with the Start Session prompt in docs/AGENTIC_WORKFLOW_MANUAL.md."
+echo "For approved implementation, use the repo-local accepted-plan-implementation skill."

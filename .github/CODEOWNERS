@@ -1,15 +1,9 @@
-# Replace @your-github-username with the repository owner or team.
-# CODEOWNERS is useful once branch protection requires code owner review.
-
-* @your-github-username
-
-# Protected process files
-/AGENTS.md @your-github-username
-/CLAUDE.md @your-github-username
-/.github/ @your-github-username
-/.codex/ @your-github-username
-/.claude/ @your-github-username
-/.githooks/ @your-github-username
-/scripts/agent/ @your-github-username
-/docs/adr/ @your-github-username
-/docs/standards/ @your-github-username
+# CODEOWNERS is intentionally inactive until the repository owner configures
+# a real GitHub user or team and enables code owner review in branch protection.
+#
+# Example activation shape:
+# * @owner-or-team
+# /AGENTS.md @owner-or-team
+# /.github/ @owner-or-team
+# /.githooks/ @owner-or-team
+# /scripts/agent/ @owner-or-team
