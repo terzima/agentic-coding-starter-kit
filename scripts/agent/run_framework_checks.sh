@@ -7,10 +7,17 @@ cd "$ROOT_DIR"
 docs=("$@")
 if [ "${#docs[@]}" -eq 0 ]; then
   docs=(
-    docs/status/CURRENT_STATE.md
-    docs/AGENTIC_WORKFLOW_MANUAL.md
+    README.md
+    agentic-workflow-manual.md
     agent-adapters.md
     scripts/agent/README.md
+    docs/specs/_template.md
+    docs/plans/_template.md
+    docs/plans/batches/_template.md
+    docs/change-requests/_template.md
+    docs/status/_template.md
+    docs/handoff/_template.md
+    docs/worklog/_template.md
   )
 fi
 

@@ -207,6 +207,10 @@ def assert_framework_checks_are_current() -> None:
     checks = (ROOT / "scripts" / "agent" / "run_framework_checks.sh").read_text(encoding="utf-8")
     for stale in ("SPEC-0007", "PLAN-0007"):
         assert stale not in checks, f"stale framework check target remains: {stale}"
+    assert "docs/status/_template.md" in checks
+    assert "docs/handoff/_template.md" in checks
+    assert "docs/status/CURRENT_STATE.md" not in checks, \
+        "starter-kit default checks should not require project CURRENT_STATE.md"
 
 
 def assert_makefile_does_not_call_removed_scripts() -> None:
