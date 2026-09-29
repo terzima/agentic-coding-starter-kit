@@ -1,5 +1,7 @@
 # Agentic Coding Starter Kit
 
+This is basically useless now with the current models.
+
 This repo is a reusable operating system for agent-assisted software projects.
 It is not an application scaffold. It is the workflow, documentation, adapter,
 hook, and review structure that can be copied into future projects before the
